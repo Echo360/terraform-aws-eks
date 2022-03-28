@@ -186,8 +186,8 @@ output "aws_auth_configmap_yaml" {
   value = templatefile("${path.module}/templates/aws_auth_cm.tpl",
     {
       eks_managed_role_arns                   = [for group in module.eks_managed_node_group : group.iam_role_arn if group.node_group_id != ""]
-      self_managed_role_arns                  = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows" && group.node_group_id != ""]
-      self_managed_role_arns                  = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows" && group.node_group_id != ""]
+      self_managed_role_arns                  = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows" && group.autoscaling_group_id != ""]
+      self_managed_role_arns                  = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows" && group.autoscaling_group_id != ""]
       fargate_profile_pod_execution_role_arns = [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn if group.fargate_profile_id != ""]
     }
   )
