@@ -155,7 +155,7 @@ output "fargate_profiles" {
 
 output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
-  value       = module.eks_managed_node_group
+  value       = [for group in module.eks_managed_node_group : group if group.node_group_id != ""]
 }
 
 output "eks_managed_node_groups_autoscaling_group_names" {
@@ -185,10 +185,10 @@ output "aws_auth_configmap_yaml" {
   description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
   value = templatefile("${path.module}/templates/aws_auth_cm.tpl",
     {
-      eks_managed_role_arns                   = [for group in module.eks_managed_node_group : group.iam_role_arn]
-      self_managed_role_arns                  = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows"]
-      win32_self_managed_role_arns            = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform == "windows"]
-      fargate_profile_pod_execution_role_arns = [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn]
+      eks_managed_role_arns                   = [for group in module.eks_managed_node_group : group.iam_role_arn if group.node_group_id != ""]
+      self_managed_role_arns                  = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows" && group.autoscaling_group_id != ""]
+      win32_self_managed_role_arns            = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform == "windows" && group.autoscaling_group_id != ""]
+      fargate_profile_pod_execution_role_arns = [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn if group.fargate_profile_id != ""]
     }
   )
 }
