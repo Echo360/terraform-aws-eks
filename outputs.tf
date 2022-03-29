@@ -155,7 +155,7 @@ output "fargate_profiles" {
 
 output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
-  value       = module.eks_managed_node_group
+  value       = [for group in module.eks_managed_node_group : group if group.node_group_id != ""]
 }
 
 output "eks_managed_node_groups_autoscaling_group_names" {
